@@ -1,9 +1,9 @@
-"""OPSEC hardening playbook (defensive content).
+"""Playbook de durcissement OPSEC (contenu défensif).
 
-Each entry inverts one technique from the source awareness video into a
-concrete countermeasure the reader can apply to themselves. The goal is the
-same as the video's: help people understand how exposure happens so they can
-reduce it.
+Chaque entrée retourne une technique de la vidéo source en contre-mesure
+concrète que le lecteur peut appliquer à lui-même. L'objectif est le même que
+celui de la vidéo : aider les gens à comprendre comment l'exposition se produit
+pour mieux la réduire.
 """
 
 from __future__ import annotations
@@ -20,164 +20,179 @@ class Countermeasure:
 
 PLAYBOOK: tuple[Countermeasure, ...] = (
     Countermeasure(
-        attack="Username enumeration across platforms (Sherlock / WhatsMyName style)",
+        attack="Énumération de pseudos multi-plateformes (type Sherlock / WhatsMyName)",
         why_it_works=(
-            "One reused handle links every account that shares it, collapsing "
-            "compartmentalisation instantly."
+            "Un seul pseudo réutilisé relie tous les comptes qui le partagent et "
+            "fait s'effondrer instantanément le cloisonnement."
         ),
         defenses=(
-            "Use a distinct, unrelated username for each identity sphere "
-            "(work, gaming, activism, personal).",
-            "Never let a throwaway handle touch an account tied to your real name.",
-            "Generate random handles rather than variations on a favourite word — "
-            "'argentic', 'argentic.34', 'argentic34' are one enumeration away "
-            "from each other.",
-            "Periodically self-audit your own handles (see `taken footprint`).",
+            "Utilisez un pseudo distinct et sans rapport pour chaque sphère "
+            "d'identité (travail, jeu, militantisme, personnel).",
+            "Ne laissez jamais un pseudo jetable toucher un compte lié à votre "
+            "vrai nom.",
+            "Générez des pseudos aléatoires plutôt que des variantes d'un mot "
+            "favori — « argentic », « argentic.34 » et « argentic34 » sont à une "
+            "énumération d'écart.",
+            "Auto-auditez régulièrement vos propres pseudos (voir `taken footprint`).",
         ),
     ),
     Countermeasure(
-        attack="Email discovery via account-recovery probing (Holehe style)",
+        attack="Découverte d'e-mail via les formulaires de récupération (type Holehe)",
         why_it_works=(
-            "Login and password-reset forms often reveal whether an email is "
-            "registered, mapping an address to a service."
+            "Les formulaires de connexion et de réinitialisation révèlent souvent "
+            "si une adresse est enregistrée, reliant une adresse à un service."
         ),
         defenses=(
-            "Use a separate email address per identity sphere.",
-            "Use email aliases / plus-addressing or a relay (e.g. hide-my-email) "
-            "so a leaked address cannot be pivoted to your primary inbox.",
-            "Prefer providers that do not disclose registration status on their "
-            "recovery forms.",
-            "Check your addresses against breach notifications and rotate any "
-            "that appear.",
+            "Utilisez une adresse e-mail distincte par sphère d'identité.",
+            "Utilisez des alias / le sous-adressage (plus-addressing) ou un relais "
+            "d'e-mail pour qu'une adresse fuitée ne puisse pas remonter à votre "
+            "boîte principale.",
+            "Préférez les fournisseurs qui ne divulguent pas le statut "
+            "d'inscription sur leurs formulaires de récupération.",
+            "Vérifiez vos adresses contre les fuites connues et remplacez celles "
+            "qui apparaissent.",
         ),
     ),
     Countermeasure(
-        attack="Discord Snowflake timestamp extraction",
+        attack="Extraction d'horodatage depuis un Snowflake Discord",
         why_it_works=(
-            "The ID itself encodes the exact creation time in milliseconds — a "
-            "fixed anchor for a pattern-of-life timeline."
+            "L'ID lui-même encode l'instant de création à la milliseconde — un "
+            "point d'ancrage fixe pour une chronologie d'activité."
         ),
         defenses=(
-            "Assume your Discord ID's timestamp is public; you cannot hide it.",
-            "Do not pair a compartmentalised Discord account with a handle or "
-            "avatar you use elsewhere — the timestamp only helps an analyst "
-            "once it is matched to another account.",
-            "Lock down your profile and disable message history where possible.",
+            "Considérez l'horodatage de votre ID Discord comme public ; vous ne "
+            "pouvez pas le cacher.",
+            "N'associez pas un compte Discord cloisonné à un pseudo ou un avatar "
+            "utilisé ailleurs — l'horodatage n'aide un analyste qu'une fois "
+            "rapproché d'un autre compte.",
+            "Verrouillez votre profil et désactivez l'historique des messages "
+            "quand c'est possible.",
         ),
     ),
     Countermeasure(
-        attack="Archive mining (Wayback Machine / CDX history)",
+        attack="Fouille d'archives (Wayback Machine / API CDX)",
         why_it_works=(
-            "The web remembers. A cleaned-up profile from today may have an "
-            "un-redacted snapshot from years ago exposing an old email or name."
+            "Le web se souvient. Un profil nettoyé aujourd'hui peut avoir une "
+            "capture non expurgée d'il y a des années révélant un ancien e-mail "
+            "ou nom."
         ),
         defenses=(
-            "Assume anything you ever posted publicly is permanently archived — "
-            "deletion today does not remove yesterday's snapshot.",
-            "Before publishing, ask whether you would be comfortable with it "
-            "surviving forever; if not, do not post it.",
-            "Request removal of specific archived pages where a service offers "
-            "it, but treat that as best-effort, not a guarantee.",
-            "Rotate emails/handles that appear in old archives so a leaked "
-            "fragment no longer maps to a live account.",
+            "Supposez que tout ce que vous avez publié publiquement est archivé "
+            "pour toujours — supprimer aujourd'hui n'efface pas la capture d'hier.",
+            "Avant de publier, demandez-vous si vous accepteriez que cela survive "
+            "éternellement ; sinon, ne le publiez pas.",
+            "Demandez le retrait de pages archivées précises quand un service le "
+            "permet, mais traitez cela comme un effort au mieux, pas une garantie.",
+            "Remplacez les e-mails/pseudos qui apparaissent dans d'anciennes "
+            "archives afin qu'un fragment fuité ne pointe plus vers un compte actif.",
         ),
     ),
     Countermeasure(
-        attack="Stylometry (writing-style fingerprinting to link identities)",
+        attack="Stylométrie (empreinte du style d'écriture pour relier des identités)",
         why_it_works=(
-            "Sentence length, punctuation habits, and vocabulary are largely "
-            "unconscious and persist across pseudonyms."
+            "La longueur des phrases, les habitudes de ponctuation et le "
+            "vocabulaire sont largement inconscients et persistent d'un pseudo à "
+            "l'autre."
         ),
         defenses=(
-            "Understand you cannot fully mask your style; the strongest defense "
-            "is to not co-locate two identities that must stay separate in the "
-            "first place.",
-            "Keep sensitive identities low-volume — the less text you produce "
-            "under a pseudonym, the weaker any stylometric model against it.",
-            "Be aware that machine translation or heavy paraphrasing changes "
-            "some markers but not all.",
+            "Comprenez que vous ne pouvez pas masquer totalement votre style ; la "
+            "meilleure défense est de ne pas co-localiser deux identités qui "
+            "doivent rester séparées.",
+            "Gardez les identités sensibles à faible volume — moins vous produisez "
+            "de texte sous un pseudo, plus tout modèle stylométrique est faible.",
+            "Sachez que la traduction automatique ou une reformulation lourde "
+            "changent certains marqueurs, mais pas tous.",
         ),
     ),
     Countermeasure(
-        attack="Chronobiological correlation (activity-timing heatmaps)",
+        attack="Corrélation chronobiologique (cartes de chaleur des horaires)",
         why_it_works=(
-            "When two 'unrelated' accounts post on the same daily/weekly rhythm "
-            "and time zone, the overlap becomes strong linking evidence."
+            "Quand deux comptes « sans rapport » publient au même rythme "
+            "journalier/hebdomadaire et dans le même fuseau, le recoupement "
+            "devient une forte preuve de lien."
         ),
         defenses=(
-            "Do not assume different accounts are unlinkable just because the "
-            "names differ; their timing correlates them.",
-            "Schedule/queue posts rather than posting live if a rhythm would be "
-            "revealing.",
-            "Be mindful that a time zone leaks from posting hours alone.",
+            "Ne supposez pas que des comptes sont non reliables juste parce que "
+            "les noms diffèrent ; leurs horaires les corrèlent.",
+            "Programmez / mettez en file vos publications plutôt que de publier en "
+            "direct si un rythme serait révélateur.",
+            "Gardez en tête qu'un fuseau horaire se déduit des seules heures de "
+            "publication.",
         ),
     ),
     Countermeasure(
-        attack="EXIF / GPS metadata harvesting from photos",
+        attack="Récolte des métadonnées EXIF / GPS des photos",
         why_it_works=(
-            "Phones geotag photos by default; a single un-stripped image pins "
-            "you to a location and time."
+            "Les téléphones géotaggent les photos par défaut ; une seule image non "
+            "nettoyée vous situe dans un lieu et un instant."
         ),
         defenses=(
-            "Disable location tagging in your camera app.",
-            "Strip metadata before uploading (see `taken metadata clean`).",
-            "Remember that many platforms strip EXIF on upload — but not all, "
-            "and not on direct file shares; do not rely on the platform.",
-            "Audit already-published photos for geotags and re-upload cleaned "
-            "versions or remove them.",
+            "Désactivez la géolocalisation dans votre appli photo.",
+            "Supprimez les métadonnées avant de téléverser (voir `taken metadata clean`).",
+            "Rappelez-vous que beaucoup de plateformes retirent l'EXIF au "
+            "téléversement — mais pas toutes, et pas sur les partages de fichier "
+            "directs ; ne comptez pas sur la plateforme.",
+            "Auditez les photos déjà publiées pour les géotags et re-téléversez "
+            "des versions nettoyées ou retirez-les.",
         ),
     ),
     Countermeasure(
-        attack="PDF metadata leakage (author, local paths, software)",
+        attack="Fuite de métadonnées PDF (auteur, chemins locaux, logiciel)",
         why_it_works=(
-            "Documents embed your name, an absolute file path revealing your OS "
-            "username and folder layout, and software licence info."
+            "Les documents intègrent votre nom, un chemin de fichier absolu "
+            "révélant votre nom d'utilisateur OS et l'arborescence, et les infos "
+            "de licence du logiciel."
         ),
         defenses=(
-            "Strip document metadata before sharing (see `taken metadata clean`).",
-            "Set a neutral author name in your editor's defaults.",
-            "Export/print-to-PDF from a neutral working directory so no "
-            "revealing path is embedded.",
+            "Supprimez les métadonnées des documents avant de les partager (voir "
+            "`taken metadata clean`).",
+            "Définissez un nom d'auteur neutre dans les réglages de votre éditeur.",
+            "Exportez / imprimez en PDF depuis un dossier de travail neutre pour "
+            "qu'aucun chemin révélateur ne soit intégré.",
         ),
     ),
     Countermeasure(
-        attack="Reverse image search and background/landmark analysis",
+        attack="Recherche d'image inversée et analyse de l'arrière-plan/repères",
         why_it_works=(
-            "Search engines match your photo to other copies, and visible "
-            "signs, architecture, and plates place it geographically."
+            "Les moteurs relient votre photo à ses autres copies, et les panneaux, "
+            "l'architecture et les plaques visibles la situent géographiquement."
         ),
         defenses=(
-            "Avoid posting photos that show identifiable exteriors near where "
-            "you live or work.",
-            "Crop or blur signage, plates, and distinctive backgrounds.",
-            "Do not reuse the same profile photo across identities — reverse "
-            "image search links them.",
+            "Évitez de publier des photos montrant des extérieurs identifiables "
+            "près de chez vous ou de votre travail.",
+            "Recadrez ou floutez les enseignes, plaques et arrière-plans "
+            "distinctifs.",
+            "Ne réutilisez pas la même photo de profil entre vos identités — la "
+            "recherche d'image inversée les relie.",
         ),
     ),
     Countermeasure(
-        attack="Social-circle leakage (friends/family exposing you)",
+        attack="Fuite par l'entourage (proches et famille qui vous exposent)",
         why_it_works=(
-            "You can practise perfect OPSEC and still be located through the "
-            "reviews, tags, and posts of people around you who do not."
+            "Vous pouvez appliquer une OPSEC parfaite et être quand même localisé "
+            "via les avis, tags et publications de vos proches qui, eux, n'en font "
+            "pas."
         ),
         defenses=(
-            "Ask close contacts not to tag you, post your location, or name "
-            "your regular spots.",
-            "Review tags applied to you and enable tag-approval where offered.",
-            "Recognise this is the hardest vector to control; reduce how much "
-            "your circle knows about the routines you want kept private.",
+            "Demandez à vos proches de ne pas vous taguer, publier votre position "
+            "ni nommer vos lieux habituels.",
+            "Vérifiez les tags qui vous concernent et activez la validation des "
+            "tags quand elle est proposée.",
+            "Reconnaissez que c'est le vecteur le plus dur à contrôler ; réduisez "
+            "ce que votre entourage sait des habitudes que vous voulez garder "
+            "privées.",
         ),
     ),
 )
 
 
 def render_playbook() -> str:
-    """Return the full playbook as readable text."""
-    lines: list[str] = ["OPSEC HARDENING PLAYBOOK", "=" * 24, ""]
+    """Renvoie le playbook complet sous forme de texte lisible."""
+    lines: list[str] = ["PLAYBOOK DE DURCISSEMENT OPSEC", "=" * 29, ""]
     for i, cm in enumerate(PLAYBOOK, 1):
         lines.append(f"{i}. {cm.attack}")
-        lines.append(f"   Why it works: {cm.why_it_works}")
-        lines.append("   Defenses:")
+        lines.append(f"   Pourquoi ça marche : {cm.why_it_works}")
+        lines.append("   Défenses :")
         lines.extend(f"     - {d}" for d in cm.defenses)
         lines.append("")
     return "\n".join(lines)

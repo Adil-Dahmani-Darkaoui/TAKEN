@@ -1,17 +1,18 @@
-"""Metadata inspector and cleaner (defensive).
+"""Inspecteur et nettoyeur de métadonnées (défensif).
 
-Cameras and editors silently embed metadata in the files you publish: GPS
-coordinates and capture time in image EXIF, and author names / absolute local
-file paths / software licences in PDFs. That is exactly the residue an OSINT
-investigator harvests. This module lets you see that metadata in *your own*
-files and strip it before you post, so there is nothing to harvest.
+Appareils et éditeurs intègrent silencieusement des métadonnées dans les
+fichiers que vous publiez : coordonnées GPS et heure de capture dans l'EXIF des
+images, noms d'auteur / chemins de fichiers locaux absolus / licences logicielles
+dans les PDF. C'est exactement le résidu que récolte un enquêteur OSINT. Ce
+module vous laisse voir ces métadonnées dans *vos propres* fichiers et les
+supprimer avant publication, pour qu'il n'y ait rien à récolter.
 
-Dependencies are optional and imported lazily:
-  - Pillow   (``pip install Pillow``) for image EXIF.
-  - pypdf    (``pip install pypdf``)  for PDF document info.
+Les dépendances sont optionnelles et importées paresseusement :
+  - Pillow  (``pip install Pillow``) pour l'EXIF des images.
+  - pypdf   (``pip install pypdf``)  pour les infos de document PDF.
 
-If a dependency is missing, the relevant function raises a clear
-``MetadataError`` telling you what to install, rather than failing obscurely.
+Si une dépendance manque, la fonction concernée lève une ``MetadataError``
+claire indiquant quoi installer, plutôt que d'échouer obscurément.
 """
 
 from __future__ import annotations
@@ -21,7 +22,7 @@ from dataclasses import dataclass, field
 
 
 class MetadataError(RuntimeError):
-    """Raised when a file cannot be processed or a dependency is missing."""
+    """Levée quand un fichier ne peut être traité ou qu'une dépendance manque."""
 
 
 @dataclass
@@ -38,40 +39,40 @@ class MetadataReport:
 
 # --- Images ----------------------------------------------------------------
 
-# EXIF tag ids we care most about, mapped to friendly names. GPSInfo (34853)
-# is the one that pins a photo to a physical place.
+# Identifiants de tags EXIF qui nous intéressent le plus, associés à des
+# libellés lisibles. GPSInfo (34853) est celui qui rattache une photo à un lieu.
 _INTERESTING_EXIF = {
-    271: "camera_make",
-    272: "camera_model",
-    305: "software",
-    306: "datetime",
-    36867: "datetime_original",
-    37510: "user_comment",
-    315: "artist",
+    271: "marque_appareil",
+    272: "modele_appareil",
+    305: "logiciel",
+    306: "date_heure",
+    36867: "date_heure_origine",
+    37510: "commentaire",
+    315: "auteur",
     33432: "copyright",
-    34853: "gps_info",
+    34853: "gps",
 }
 
 
 def inspect_image(path: str) -> MetadataReport:
-    """Return the interesting EXIF metadata embedded in an image."""
+    """Renvoie les métadonnées EXIF intéressantes intégrées à une image."""
     try:
         from PIL import Image  # type: ignore
     except ImportError as exc:  # pragma: no cover - environment dependent
         raise MetadataError(
-            "Reading image metadata requires Pillow. Install it with:\n"
+            "La lecture des métadonnées d'image nécessite Pillow. Installez-le avec :\n"
             "    pip install Pillow"
         ) from exc
 
     if not os.path.isfile(path):
-        raise MetadataError(f"No such file: {path}")
+        raise MetadataError(f"Fichier introuvable : {path}")
 
     report = MetadataReport(path=path, kind="image")
     try:
         with Image.open(path) as img:
             exif = img.getexif()
     except Exception as exc:  # noqa: BLE001 - surface any decode failure cleanly
-        raise MetadataError(f"Could not read image {path}: {exc}") from exc
+        raise MetadataError(f"Impossible de lire l'image {path} : {exc}") from exc
 
     if not exif:
         return report
@@ -80,13 +81,13 @@ def inspect_image(path: str) -> MetadataReport:
         name = _INTERESTING_EXIF.get(tag_id)
         if name is None:
             continue
-        if name == "gps_info":
-            # Presence of a populated GPS block means the file is geotagged.
+        if name == "gps":
+            # La présence d'un bloc GPS rempli signifie que le fichier est géotaggé.
             if value:
                 report.has_location = True
-                report.fields["gps_info"] = "present (geotagged)"
+                report.fields["gps"] = "présent (géotaggé)"
                 report.warnings.append(
-                    "This image is geotagged with GPS coordinates."
+                    "Cette image est géotaggée avec des coordonnées GPS."
                 )
         else:
             report.fields[name] = _stringify(value)
@@ -95,108 +96,108 @@ def inspect_image(path: str) -> MetadataReport:
 
 
 def clean_image(path: str, output: str) -> str:
-    """Write a copy of ``path`` to ``output`` with all metadata removed.
+    """Écrit une copie de ``path`` vers ``output`` sans aucune métadonnée.
 
-    The pixels are preserved; EXIF, GPS, and other ancillary chunks are not
-    copied. Returns the output path.
+    Les pixels sont conservés ; l'EXIF, le GPS et les autres blocs annexes ne
+    sont pas copiés. Renvoie le chemin de sortie.
     """
     try:
         from PIL import Image  # type: ignore
     except ImportError as exc:  # pragma: no cover - environment dependent
         raise MetadataError(
-            "Cleaning images requires Pillow. Install it with:\n"
+            "Le nettoyage des images nécessite Pillow. Installez-le avec :\n"
             "    pip install Pillow"
         ) from exc
 
     if not os.path.isfile(path):
-        raise MetadataError(f"No such file: {path}")
+        raise MetadataError(f"Fichier introuvable : {path}")
 
     try:
         with Image.open(path) as img:
-            # Re-create the image from raw pixel data so no metadata rides along.
+            # Recrée l'image à partir des pixels bruts pour n'embarquer aucune métadonnée.
             clean = Image.new(img.mode, img.size)
             clean.putdata(list(img.getdata()))
             clean.save(output)
     except Exception as exc:  # noqa: BLE001
-        raise MetadataError(f"Could not clean image {path}: {exc}") from exc
+        raise MetadataError(f"Impossible de nettoyer l'image {path} : {exc}") from exc
 
     return output
 
 
-# --- PDFs ------------------------------------------------------------------
+# --- PDF -------------------------------------------------------------------
 
 def inspect_pdf(path: str) -> MetadataReport:
-    """Return the document-info metadata embedded in a PDF."""
+    """Renvoie les métadonnées d'information de document intégrées à un PDF."""
     try:
         from pypdf import PdfReader  # type: ignore
     except ImportError as exc:  # pragma: no cover - environment dependent
         raise MetadataError(
-            "Reading PDF metadata requires pypdf. Install it with:\n"
+            "La lecture des métadonnées PDF nécessite pypdf. Installez-le avec :\n"
             "    pip install pypdf"
         ) from exc
 
     if not os.path.isfile(path):
-        raise MetadataError(f"No such file: {path}")
+        raise MetadataError(f"Fichier introuvable : {path}")
 
     report = MetadataReport(path=path, kind="pdf")
     try:
         reader = PdfReader(path)
         info = reader.metadata or {}
     except Exception as exc:  # noqa: BLE001
-        raise MetadataError(f"Could not read PDF {path}: {exc}") from exc
+        raise MetadataError(f"Impossible de lire le PDF {path} : {exc}") from exc
 
     for key, value in dict(info).items():
         clean_key = str(key).lstrip("/")
         text = _stringify(value)
         report.fields[clean_key] = text
-        # A Windows/macOS absolute path in any field leaks your username.
+        # Un chemin absolu Windows/macOS/Linux dans un champ révèle votre identifiant.
         if ":\\Users\\" in text or "/Users/" in text or "/home/" in text:
             report.warnings.append(
-                f"Field {clean_key!r} contains a local file path that leaks a "
-                "username and folder structure."
+                f"Le champ {clean_key!r} contient un chemin de fichier local qui "
+                "révèle un nom d'utilisateur et une arborescence de dossiers."
             )
     return report
 
 
 def clean_pdf(path: str, output: str) -> str:
-    """Write a copy of ``path`` to ``output`` with document metadata removed."""
+    """Écrit une copie de ``path`` vers ``output`` sans les métadonnées de document."""
     try:
         from pypdf import PdfReader, PdfWriter  # type: ignore
     except ImportError as exc:  # pragma: no cover - environment dependent
         raise MetadataError(
-            "Cleaning PDFs requires pypdf. Install it with:\n"
+            "Le nettoyage des PDF nécessite pypdf. Installez-le avec :\n"
             "    pip install pypdf"
         ) from exc
 
     if not os.path.isfile(path):
-        raise MetadataError(f"No such file: {path}")
+        raise MetadataError(f"Fichier introuvable : {path}")
 
     try:
         reader = PdfReader(path)
         writer = PdfWriter()
         for page in reader.pages:
             writer.add_page(page)
-        # Overwrite metadata with an empty mapping.
+        # Remplace les métadonnées par un dictionnaire vide.
         writer.add_metadata({})
         with open(output, "wb") as fh:
             writer.write(fh)
     except Exception as exc:  # noqa: BLE001
-        raise MetadataError(f"Could not clean PDF {path}: {exc}") from exc
+        raise MetadataError(f"Impossible de nettoyer le PDF {path} : {exc}") from exc
 
     return output
 
 
-# --- Shared ----------------------------------------------------------------
+# --- Commun ----------------------------------------------------------------
 
 def inspect(path: str) -> MetadataReport:
-    """Inspect a file, dispatching on extension."""
+    """Inspecte un fichier, en aiguillant selon l'extension."""
     ext = os.path.splitext(path)[1].lower()
     if ext == ".pdf":
         return inspect_pdf(path)
     if ext in {".jpg", ".jpeg", ".tif", ".tiff", ".png", ".webp", ".heic"}:
         return inspect_image(path)
     raise MetadataError(
-        f"Unsupported file type {ext!r}. Supported: images and .pdf"
+        f"Type de fichier non supporté {ext!r}. Types supportés : images et .pdf"
     )
 
 

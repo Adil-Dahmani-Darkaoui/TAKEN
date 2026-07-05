@@ -40,5 +40,5 @@ def test_rejects_oversized_value():
 
 def test_explain_mentions_defenses():
     text = snowflake.explain(175928847299117063)
-    assert "How to defend" in text
+    assert "se défendre" in text
     assert "2016" in text

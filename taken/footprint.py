@@ -39,22 +39,24 @@ PLATFORMS: dict[str, str] = {
 }
 
 _REMEDIATION: dict[str, str] = {
-    "GitHub": "Review your public repos, gists, commit emails, and profile "
-    "README. Set a no-reply commit email in Settings > Emails.",
-    "GitLab": "Check public projects and your activity feed visibility in "
-    "profile settings.",
-    "Reddit": "Old comments are a stylometry and location goldmine. Review "
-    "your history; consider editing/deleting posts that place you.",
-    "Instagram": "Set the account private; remove location tags from past "
-    "posts; strip the bio of your city/employer.",
-    "Twitch": "Check your About panel and past clips for background details "
-    "that reveal your home or workplace.",
-    "Flickr": "Turn off 'import EXIF location data' and scrub geotags from "
-    "existing photos; Flickr can expose GPS publicly.",
-    "Pinterest": "Make boards secret if they reveal your neighbourhood, "
-    "workplace, or routines.",
-    "Steam": "Set your profile and game details to Friends-only; a public "
-    "profile leaks your activity schedule.",
+    "GitHub": "Passez en revue vos dépôts publics, gists, e-mails de commit et le "
+    "README de profil. Définissez un e-mail de commit no-reply dans Settings > Emails.",
+    "GitLab": "Vérifiez les projets publics et la visibilité de votre fil "
+    "d'activité dans les réglages du profil.",
+    "Reddit": "Les vieux commentaires sont une mine pour la stylométrie et la "
+    "localisation. Passez en revue votre historique ; envisagez de modifier/"
+    "supprimer les messages qui vous situent.",
+    "Instagram": "Passez le compte en privé ; retirez les tags de lieu des "
+    "anciennes publications ; nettoyez la bio de votre ville/employeur.",
+    "Twitch": "Vérifiez votre panneau « À propos » et vos anciens clips pour les "
+    "détails d'arrière-plan qui révèlent votre domicile ou lieu de travail.",
+    "Flickr": "Désactivez « importer les données de localisation EXIF » et "
+    "retirez les géotags des photos existantes ; Flickr peut exposer le GPS "
+    "publiquement.",
+    "Pinterest": "Rendez les tableaux secrets s'ils révèlent votre quartier, "
+    "votre lieu de travail ou vos habitudes.",
+    "Steam": "Passez votre profil et vos détails de jeu en « Amis uniquement » ; "
+    "un profil public divulgue votre emploi du temps d'activité.",
 }
 
 _USER_AGENT = "Taken-footprint-self-audit/0.1 (+defensive privacy self-check)"
@@ -79,12 +81,14 @@ def audit(handle: str, *, consent: bool = False, timeout: float = 8.0) -> list[P
     """
     handle = handle.strip().lstrip("@")
     if not handle:
-        raise ValueError("handle must not be empty")
+        raise ValueError("le pseudo ne doit pas être vide")
 
     results: list[PlatformResult] = []
     for platform, template in PLATFORMS.items():
         url = template.format(handle=urllib.request.quote(handle))
-        remediation = _REMEDIATION.get(platform, "Review this profile's privacy settings.")
+        remediation = _REMEDIATION.get(
+            platform, "Passez en revue les réglages de confidentialité de ce profil."
+        )
         if not consent:
             results.append(
                 PlatformResult(platform, url, checked=False, found=None, remediation=remediation)

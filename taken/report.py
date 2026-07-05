@@ -1,8 +1,9 @@
-"""Assemble a personal exposure report (defensive).
+"""Assemble un rapport d'exposition personnel (défensif).
 
-Combines the (self-scoped, consent-gated) footprint audit, the OPSEC
-playbook, and the legal/support resources into a single Markdown report you
-can keep and act on. Everything here concerns the operator's own exposure.
+Combine l'audit d'empreinte (limité à soi, avec consentement), le playbook
+OPSEC et les ressources légales / d'aide en un seul rapport Markdown que vous
+pouvez conserver et exploiter. Tout ici concerne la propre exposition de
+l'utilisateur.
 """
 
 from __future__ import annotations
@@ -15,57 +16,58 @@ from . import footprint, opsec, resources
 def build_report(handle: str | None, *, consent: bool = False) -> str:
     now = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     lines: list[str] = [
-        "# Taken — Personal Exposure Report",
+        "# TAKEN — Rapport d'exposition personnel",
         "",
-        f"_Generated {now}. This report is about your own digital footprint._",
+        f"_Généré le {now}. Ce rapport concerne votre propre empreinte numérique._",
         "",
-        "> Taken is a defensive privacy tool. It audits your own exposure and "
-        "does not de-anonymise or locate anyone.",
+        "> TAKEN est un outil défensif de confidentialité. Il audite votre propre "
+        "exposition et ne désanonymise ni ne localise personne.",
         "",
     ]
 
-    lines.append("## 1. Footprint self-audit")
+    lines.append("## 1. Auto-audit d'empreinte")
     lines.append("")
     if handle:
         if not consent:
             lines.append(
-                f"Scope preview for handle `{handle}` (no network checks were "
-                "run). Re-run with consent to check these live, and only for a "
-                "handle you own:"
+                f"Aperçu du périmètre pour le pseudo `{handle}` (aucune "
+                "vérification réseau n'a été effectuée). Relancez avec le "
+                "consentement pour vérifier en direct, et seulement pour un pseudo "
+                "qui est le vôtre :"
             )
             lines.append("")
             for r in footprint.audit(handle, consent=False):
-                lines.append(f"- **{r.platform}** — would check `{r.url}`")
-                lines.append(f"    - Remediation: {r.remediation}")
+                lines.append(f"- **{r.platform}** — vérifierait `{r.url}`")
+                lines.append(f"    - Remédiation : {r.remediation}")
         else:
-            lines.append(f"Live results for your handle `{handle}`:")
+            lines.append(f"Résultats en direct pour votre pseudo `{handle}` :")
             lines.append("")
             for r in footprint.audit(handle, consent=True):
                 if r.found is True:
-                    status = "PRESENT"
+                    status = "PRÉSENT"
                 elif r.found is False:
-                    status = "not found"
+                    status = "absent"
                 else:
-                    status = "inconclusive (blocked/rate-limited)"
+                    status = "non concluant (bloqué / limité)"
                 lines.append(f"- **{r.platform}** — {status} — {r.url}")
                 if r.found is not False:
-                    lines.append(f"    - Remediation: {r.remediation}")
+                    lines.append(f"    - Remédiation : {r.remediation}")
     else:
-        lines.append("_No handle provided; skipping footprint audit._")
+        lines.append("_Aucun pseudo fourni ; audit d'empreinte ignoré._")
     lines.append("")
 
-    lines.append("## 2. OPSEC hardening playbook")
+    lines.append("## 2. Playbook de durcissement OPSEC")
     lines.append("")
     for i, cm in enumerate(opsec.PLAYBOOK, 1):
         lines.append(f"### 2.{i} {cm.attack}")
         lines.append("")
-        lines.append(f"*Why it works:* {cm.why_it_works}")
+        lines.append(f"*Pourquoi ça marche :* {cm.why_it_works}")
         lines.append("")
-        lines.append("*Defenses:*")
+        lines.append("*Défenses :*")
         lines.extend(f"- {d}" for d in cm.defenses)
         lines.append("")
 
-    lines.append("## 3. Legal framework and support")
+    lines.append("## 3. Cadre légal et aide")
     lines.append("")
     lines.append("```")
     lines.append(resources.render_resources())
