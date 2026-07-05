@@ -95,7 +95,7 @@ Chaque technique d'attaque de la vidéo, retournée en outil de défense :
 
 ---
 
-## Installation
+## Installation (Linux / macOS)
 
 ```bash
 git clone https://github.com/Adil-Dahmani-Darkaoui/TAKEN
@@ -109,6 +109,75 @@ Ou sans installation :
 ```bash
 python -m taken --help
 ```
+
+---
+
+## Installation et utilisation sur Windows
+
+TAKEN fonctionne à l'identique sur Windows. Voici la marche à suivre depuis
+**PowerShell** (ou l'Invite de commandes `cmd`).
+
+**1. Installer Python**
+- Téléchargez Python 3.9 ou plus récent : <https://www.python.org/downloads/windows/>
+- Pendant l'installation, **cochez « Add python.exe to PATH »**.
+- Vérifiez dans PowerShell :
+
+```powershell
+py --version
+```
+
+**2. Récupérer TAKEN**
+
+Avec Git :
+
+```powershell
+git clone https://github.com/Adil-Dahmani-Darkaoui/TAKEN
+cd TAKEN
+```
+
+Sans Git : sur la page GitHub, bouton **« Code » → « Download ZIP »**,
+décompressez l'archive, puis placez-vous dans le dossier :
+
+```powershell
+cd C:\Users\Vous\Downloads\TAKEN
+```
+
+**3. Installer** (sur Windows, on lance Python avec le lanceur `py`) :
+
+```powershell
+py -m pip install -e ".[metadata]"   # avec le support EXIF/PDF
+# ou, cœur seul :
+py -m pip install -e .
+```
+
+**4. Utiliser :**
+
+```powershell
+py -m taken --help
+
+# Inspecter puis nettoyer une photo — guillemets autour des chemins Windows (antislash \)
+py -m taken metadata inspect "C:\Users\Vous\Pictures\photo.jpg"
+py -m taken metadata clean "C:\Users\Vous\Pictures\photo.jpg" "C:\Users\Vous\Pictures\photo_propre.jpg"
+
+py -m taken snowflake 175928847299117063
+py -m taken footprint monpseudo
+py -m taken playbook
+py -m taken report monpseudo --consent -o mon_exposition.md
+```
+
+Après l'installation, la commande `taken` est aussi disponible directement :
+
+```powershell
+taken --help
+```
+
+> **Astuces Windows**
+> - Mettez toujours les chemins entre `"guillemets"` s'ils contiennent des espaces.
+> - Si `py` n'est pas reconnu, réinstallez Python en cochant « Add python.exe to PATH », ou utilisez `python` à la place.
+> - Les accents s'affichent mieux dans **Windows Terminal** / PowerShell que dans l'ancien `cmd`.
+> - Pour rejouer la démonstration, enregistrez le script Python de la section
+>   [Reproduire la démonstration](#reproduire-la-démonstration) dans un fichier
+>   `fabrique_photo.py`, puis lancez `py fabrique_photo.py`.
 
 ---
 
