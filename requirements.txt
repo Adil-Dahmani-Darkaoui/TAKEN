@@ -1,0 +1,8 @@
+# Core Taken runs on the Python standard library alone.
+# These optional dependencies enable the `metadata` subcommand
+# (inspecting and stripping EXIF/PDF metadata from your own files).
+Pillow>=9.0
+pypdf>=3.0
+
+# For running the test suite:
+pytest>=7.0
