@@ -3,7 +3,7 @@ from taken import opsec, report, resources
 
 def test_playbook_covers_all_techniques():
     text = opsec.render_playbook()
-    for needle in ("Username enumeration", "Snowflake", "EXIF", "Stylometry", "Social-circle"):
+    for needle in ("Énumération", "Snowflake", "EXIF", "Stylométrie", "entourage"):
         assert needle in text
 
 
@@ -22,10 +22,10 @@ def test_resources_include_support_lines():
 
 def test_report_preview_makes_no_network_claim():
     text = report.build_report("me", consent=False)
-    assert "no network checks were run" in text
-    assert "OPSEC hardening playbook" in text
+    assert "aucune vérification réseau" in text
+    assert "Playbook de durcissement OPSEC" in text
 
 
 def test_report_without_handle():
     text = report.build_report(None)
-    assert "skipping footprint audit" in text
+    assert "audit d'empreinte ignoré" in text

@@ -19,14 +19,14 @@ Voici TAKEN qui révèle la fuite, puis la neutralise (sortie réelle de l'outil
 
 ```console
 $ python -m taken metadata inspect photo_vacances.jpg
-Metadata in photo_vacances.jpg (image):
-  gps_info: present (geotagged)
-  camera_make: ACME
-  camera_model: Phone 12
-  software: PhoneOS 4.2
-  datetime: 2026:07:05 14:30:00
-  ! This image is geotagged with GPS coordinates.
-  ! This file is geotagged — strip it before sharing.
+Métadonnées dans photo_vacances.jpg (image) :
+  gps : présent (géotaggé)
+  marque_appareil : ACME
+  modele_appareil : Phone 12
+  logiciel : PhoneOS 4.2
+  date_heure : 2026:07:05 14:30:00
+  ! Cette image est géotaggée avec des coordonnées GPS.
+  ! Ce fichier est géotaggé — nettoyez-le avant de le partager.
 ```
 
 La photo trahit : les **coordonnées GPS** (donc le lieu), la **marque et le
@@ -36,15 +36,15 @@ modèle** de l'appareil, le **logiciel**, et la **date/heure** exactes de la pri
 
 ```console
 $ python -m taken metadata clean photo_vacances.jpg photo_propre.jpg
-Wrote metadata-free copy to photo_propre.jpg
+Copie sans métadonnées écrite dans photo_propre.jpg
 ```
 
 **3) On ré‑inspecte la copie — plus rien à récolter :**
 
 ```console
 $ python -m taken metadata inspect photo_propre.jpg
-Metadata in photo_propre.jpg (image):
-  (no interesting metadata found)
+Métadonnées dans photo_propre.jpg (image) :
+  (aucune métadonnée intéressante trouvée)
 ```
 
 Les pixels sont conservés, mais la couche de métadonnées a disparu. C'est
@@ -54,8 +54,7 @@ supprime l'auteur, les chemins de fichiers locaux qui révèlent votre nom
 d'utilisateur, etc.).
 
 > Reproduire la démo : voir la section [Reproduire la démonstration](#reproduire-la-démonstration).
-> Les messages de l'outil sont actuellement en anglais — la traduction de
-> l'interface en français est possible sur demande.
+> L'interface de l'outil est entièrement en français.
 
 ---
 
@@ -142,14 +141,15 @@ python -m taken report monpseudo --consent -o mon_exposition.md
 
 ```console
 $ python -m taken snowflake 175928847299117063
-Discord ID 175928847299117063 was created on 2016-04-30 11:18:25 UTC (~3718 days ago).
+L'ID Discord 175928847299117063 a été créé le 2016-04-30 11:18:25 UTC (il y a ~3718 jours).
 
-What this leaks about you:
-  - The exact creation timestamp of the account/message/server.
-  - A fixed anchor for a 'pattern of life' timeline an analyst could
-    correlate against activity on your other accounts.
+Ce que cela révèle sur vous :
+  - L'horodatage exact de création du compte/message/serveur.
+  - Un point d'ancrage fixe pour une chronologie d'activité
+    (« pattern of life ») qu'un analyste pourrait corréler avec
+    l'activité de vos autres comptes.
 
-How to defend:
+Comment se défendre :
   ...
 ```
 
@@ -158,11 +158,11 @@ How to defend:
 
 ```console
 $ python -m taken footprint monpseudo
-Live checks only run for a handle you own. By passing --consent you affirm this handle is yours and you are auditing your own exposure.
+Les vérifications en direct ne s'exécutent que pour un pseudo qui est le vôtre. En passant --consent, vous affirmez que ce pseudo est le vôtre et que vous auditez votre propre exposition.
 
-Scope preview for 'monpseudo' (no requests made):
-  GitHub: would check https://github.com/monpseudo
-    remediation: Review your public repos, gists, commit emails, and profile README. ...
+Aperçu du périmètre pour « monpseudo » (aucune requête effectuée) :
+  GitHub : vérifierait https://github.com/monpseudo
+    remédiation : Passez en revue vos dépôts publics, gists, e-mails de commit et le README de profil. ...
 ```
 
 ---

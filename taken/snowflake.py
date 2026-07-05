@@ -77,23 +77,25 @@ def decode(snowflake: int | str) -> SnowflakeInfo:
 
 
 def explain(snowflake: int | str) -> str:
-    """Return a human-readable explanation of what an ID leaks, plus defenses."""
+    """Renvoie une explication lisible de ce que fuite un ID, plus les défenses."""
     info = decode(snowflake)
     age_days = (datetime.now(tz=timezone.utc) - info.created_at).days
     return (
-        f"Discord ID {info.snowflake} was created on "
+        f"L'ID Discord {info.snowflake} a été créé le "
         f"{info.created_at.strftime('%Y-%m-%d %H:%M:%S UTC')} "
-        f"(~{age_days} days ago).\n\n"
-        "What this leaks about you:\n"
-        "  - The exact creation timestamp of the account/message/server.\n"
-        "  - A fixed anchor for a 'pattern of life' timeline an analyst could\n"
-        "    correlate against activity on your other accounts.\n\n"
-        "How to defend:\n"
-        "  - Treat your Discord ID as public — it always encodes this time; you\n"
-        "    cannot hide it while using the account. Assume it is known.\n"
-        "  - Do not reuse the same display name / avatar across accounts you\n"
-        "    want kept separate; the timestamp becomes a correlation aid only\n"
-        "    when it is paired with a matching handle elsewhere.\n"
-        "  - When compartmentalising identities, create their accounts at\n"
-        "    unrelated times and never cross-post between them."
+        f"(il y a ~{age_days} jours).\n\n"
+        "Ce que cela révèle sur vous :\n"
+        "  - L'horodatage exact de création du compte/message/serveur.\n"
+        "  - Un point d'ancrage fixe pour une chronologie d'activité\n"
+        "    (« pattern of life ») qu'un analyste pourrait corréler avec\n"
+        "    l'activité de vos autres comptes.\n\n"
+        "Comment se défendre :\n"
+        "  - Considérez votre ID Discord comme public — il encode toujours cet\n"
+        "    instant ; vous ne pouvez pas le cacher tant que vous utilisez le\n"
+        "    compte. Supposez-le connu.\n"
+        "  - Ne réutilisez pas le même nom affiché / avatar sur des comptes que\n"
+        "    vous voulez garder séparés ; l'horodatage ne devient un indice de\n"
+        "    corrélation qu'une fois associé à un pseudo identique ailleurs.\n"
+        "  - Quand vous cloisonnez des identités, créez leurs comptes à des\n"
+        "    moments sans rapport et ne faites jamais de renvoi entre elles."
     )
