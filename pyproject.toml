@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "taken"
+version = "0.1.0"
+description = "Defensive digital-footprint and OPSEC self-defense toolkit."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Taken contributors" }]
+keywords = ["opsec", "privacy", "digital-footprint", "self-audit", "metadata"]
+
+# Core toolkit runs on the standard library. Optional extras enable file
+# metadata inspection/cleaning.
+dependencies = []
+
+[project.optional-dependencies]
+metadata = ["Pillow>=9.0", "pypdf>=3.0"]
+dev = ["pytest>=7.0", "Pillow>=9.0", "pypdf>=3.0"]
+
+[project.scripts]
+taken = "taken.cli:main"
+
+[tool.setuptools]
+packages = ["taken"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
